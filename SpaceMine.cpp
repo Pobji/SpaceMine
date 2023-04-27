@@ -78,10 +78,28 @@ void writeOutput(const std::string& something)
     std::cout << output;
 }
 
-std::string readUserInput()
+std::string readUserInput(bool number)
 {// строка пользователю на ввод
     std::string input;
-    std::getline(std::cin, input);
+    while (true)
+    {
+        std::getline(std::cin, input);
+        if ((number == true) && (input.length() > 0))
+        {
+            for (int i = 0; i < input.length(); i++)
+            {
+                if (!(input[i] == '0') && !(input[i] == '1') && !(input[i] == '2') && !(input[i] == '3') && !(input[i] == '4') && !(input[i] == '5') && !(input[i] == '6') && !(input[i] == '7') && !(input[i] == '8') && !(input[i] == '9'))
+                {
+                    writeOutput("Необходимо ввести число, попробуйте еще раз!\n");
+                    number = true;
+                    break;
+                }
+                else number = false;
+            }
+        }
+        else if ((number == true) && (input.length() == 0)) writeOutput("Вы ничего не ввели, попробуйте еще раз!\n");
+        if (number == false) break;
+    }
     std::transform(input.begin(), input.end(), input.begin(), tolower);
 #ifdef _WIN32
     input = cp1251_to_utf8(input);
@@ -101,7 +119,8 @@ void help(int help_num)
         writeOutput("4. Таблица лидеров - отображает имя игрока и счет, с которым игрок полностью закончил игру, не важно успешно или нет.\n");
         writeOutput("5. Описание - небольшое художественное описание игры, которое помимо прочего содержит и некоторые намеки на происходящее в ней.\n");
         writeOutput("6. Помощь - список команд и их краткое описание. Данная команда доступна в любой момент,\n");
-        writeOutput("   когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам на данном этапе игры.\n");
+        writeOutput("   когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам\n");
+        writeOutput("   на данном этапе игры.\n");
         writeOutput("7. Выход - выход из игры.\n\n");
         break;
     case 1:
@@ -124,7 +143,8 @@ void help(int help_num)
         writeOutput("15. !погода - выводит на экран текущие погодные условия.\n");
         writeOutput("16. Отправить - отправляет указанное количество минералов Империи.\n");
         writeOutput("17. Помощь - список команд и их краткое описание. Данная команда доступна в любой момент,\n");
-        writeOutput("    когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам на данном этапе игры.\n");
+        writeOutput("    когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам\n");
+        writeOutput("    на данном этапе игры.\n");
         writeOutput("18. Сохранить - команда выполняет сохранение вашего текущего прогресса.\n");
         writeOutput("19. Завершить год - производит завершение текущего года и переход в следующий.\n\n");
         break;
@@ -133,7 +153,8 @@ void help(int help_num)
         writeOutput("2. Минералы - команда для продажи/покупки минералов.\n");
         writeOutput("3. Продовольствие - команда для продажи/покупки продовольствия.\n");
         writeOutput("4. Помощь - список команд и их краткое описание. Данная команда доступна в любой момент,\n");
-        writeOutput("   когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам на данном этапе игры.\n");
+        writeOutput("   когда игра не просит указать количество или число и содержит в себе полный список команд доступный вам\n");
+        writeOutput("   на данном этапе игры.\n");
         writeOutput("5. Выход - отменить покупку/продажу.\n\n");
         break;
     case 3:
@@ -207,7 +228,7 @@ void sell_buy(int& money, int& mines, int& ore, int* food, int mprice, int opric
     {
         writeOutput("Что вы желаете " + operation + "?\n");
         writeOutput(prompt);
-        std::string choice = readUserInput();
+        std::string choice = readUserInput(false);
         if ((choice == "шахту") || (choice == "1"))
         {
             for (;;)
@@ -216,7 +237,7 @@ void sell_buy(int& money, int& mines, int& ore, int* food, int mprice, int opric
                 if (operation == "купить") writeOutput("Вы можете купить " + std::to_string(money / mprice) + " шахт.\n");
                 else writeOutput("В вашем распоряжении " + std::to_string(mines) + " шахт.\n");
                 writeOutput("Укажите количество шахт для " + operation2 + ":\n");
-                num = std::stoi(readUserInput());
+                num = std::stoi(readUserInput(true));
                 if (((k == 1) && (num <= mines)) || ((k == -1) && (money >= num * mprice)) && (num >= 0))
                 {
                     money += (k * num * mprice);
@@ -238,7 +259,7 @@ void sell_buy(int& money, int& mines, int& ore, int* food, int mprice, int opric
                 if (operation == "купить") writeOutput("Вы можете купить " + std::to_string(money / oprice) + " тон минералов.\n");
                 else writeOutput("В вашем распоряжении " + std::to_string(ore) + " тон минералов.\n");
                 writeOutput("Укажите количество минералов для " + operation2 + ":\n");
-                num = std::stoi(readUserInput());
+                num = std::stoi(readUserInput(true));
                 if (((k == 1) && (num <= ore)) || ((k == -1) && (money >= num * oprice)) && (num >= 0))
                 {
                     money += (k * num * oprice);
@@ -260,7 +281,7 @@ void sell_buy(int& money, int& mines, int& ore, int* food, int mprice, int opric
                 if (operation == "купить") writeOutput("Вы можете купить " + std::to_string(money / fprice) + " единиц продовольствия.\n");
                 else writeOutput("В вашем распоряжении " + std::to_string(food[0] + food[1] + food[2]) + " единиц продовольствия.\n");
                 writeOutput("Укажите количество продовольствия для " + operation2 + ":\n");
-                num = std::stoi(readUserInput());
+                num = std::stoi(readUserInput(true));
                 if (((k == 1) && (num <= food[0] + food[1] + food[2])) || ((k == -1) && (money >= num * fprice)) && (num >= 0))
                 {
                     money += (k * num * fprice);
@@ -389,7 +410,7 @@ std::string story(int year)
     {
     case 1:
         writeOutput("Введите имя игрока: ");
-        story_output = readUserInput();
+        story_output = readUserInput(false);
         break;
     case 2:
  //       writeOutput("Вам пришло новое сообщение!\n");
@@ -480,7 +501,7 @@ void runGameStep(bool no_text, std::string game_basics)
         while (true)
         {
             writeOutput("Введите команду:\n");
-            std::string choice = readUserInput();
+            std::string choice = readUserInput(false);
             if ((choice == "продать") || (choice == "1")) sell_buy(money, mines, ore, food, mineprice, oreprice, foodprice, "продать");
             else if ((choice == "купить") || (choice == "2")) sell_buy(money, mines, ore, food, mineprice, oreprice, foodprice, "купить");
             else if ((choice == "статистика") || (choice == "3")) statistics(year, population, mines, money, satisfaction, production, ore, food, workers, ImpOre, Delivered);
@@ -490,7 +511,7 @@ void runGameStep(bool no_text, std::string game_basics)
                 {
                     writeOutput("Количество шахтеров не может превышать вашу популяцию колонистов. Каждая шахта может вместить до 10 рабочих.\n");
                     writeOutput("Сколько колонистов вы желаете отправить на добычу минералов?\n");
-                    int count = stoi(readUserInput());
+                    int count = std::stoi(readUserInput(true));
                     if (workers + count > population) writeOutput("Вы ввели недопустимое число, суммарное количество шахтеров не может превышать количество колонистов!\n");
                     else if (workers + count > mines * 10) writeOutput("Переизбыток рабочих на шахтах, каждая шахта может вмещать до 10 шахтеров!\n");
                     else
@@ -528,7 +549,7 @@ void runGameStep(bool no_text, std::string game_basics)
                     {
                         writeOutput("На вашем складе " + std::to_string(ore) + " тон минералов.\n");
                         writeOutput("Какое количество минералов вы желаете отправить?\n");
-                        int count = stoi(readUserInput());
+                        int count = std::stoi(readUserInput(true));
                         if (count > ore) writeOutput("Вы не можете отправить больше минералов, чем находится на вашем складе.\n");
                         else
                         {
@@ -543,7 +564,7 @@ void runGameStep(bool no_text, std::string game_basics)
             else if ((choice == "помощь") || (choice == "17")) help(1);
             else if ((choice == "сохранить") || (choice == "18")) save(ore, mines, population, satisfaction, food, money, year, ImpOre, Delivered, player_name);
             else if ((choice == "завершить год") || (choice == "19")) break;
-            else writeOutput("Введена неизвестная команда! Для получения списка всех доступных команд введите помощь или 16!\n");
+            else writeOutput("Введена неизвестная команда! Для получения списка всех доступных команд введите помощь или 17!\n");
         }
         if (futile = failure(population, satisfaction, mines, year)) break;
         if (ImpOre-1 < Delivered) break;
@@ -621,7 +642,7 @@ std::string load()
             for (; (choice < 1) || (choice > max_saves);)
             {
                 writeOutput("Введите номер сохранения, который желаете загрузить.\n");
-                choice = stoi(readUserInput());
+                choice = std::stoi(readUserInput(true));
                 if ((choice < 1) || (choice > max_saves)) writeOutput("Сохранения с введенным номером не существует!\n");
             }
             fin.open("svf.txt", std::ios_base::in);
@@ -654,7 +675,7 @@ int main(int argc, char* argv[])
         writeOutput("5. Описание\n");
         writeOutput("6. Помощь\n");
         writeOutput("7. Выход\n\n");
-        std::string choice = readUserInput();
+        std::string choice = readUserInput(false);
         std::string base_stats = { "" };
         std::cout << std::endl;
         if ((choice == "начать новую игру") || (choice == "1"))
@@ -691,7 +712,7 @@ int main(int argc, char* argv[])
             writeOutput("Достигать этих целей вы будете посредством взаимодействия с интерфейсом ввода.\n");
             writeOutput("Каждый год вам будет предоставляться подробная статистическая информация о состоянии колонии.\n");
             writeOutput("Ваши колонисты - лучшие колонисты во всей империи, а значит продовольствие они не потребляют!\n");
-            writeOutput("Но продовольствие необходимо для регулирования их уровня счастья, к сожалению, оно хранится 3 дня.\n");
+            writeOutput("Но продовольствие необходимо для регулирования их уровня счастья, к сожалению, оно хранится 3 года.\n");
             writeOutput("Для повышения уровня счастья необходимо более 50 единиц продовольствия на колониста,\n");
             writeOutput("Но если единиц продовольствия менее 10 на колониста, то уровень счастья будет уменьшаться.\n");
             writeOutput("При поддержании счастья на высоком уровне к вам начнут прибывать новые колонисты.\n");
